@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 17/02/2014 13:51:31 by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+    <class name="vo.Chavesativacao" table="chavesativacao" catalog="emailmarketing">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="versaoInstalada" type="string">
+            <column name="versao_instalada" length="10" />
+        </property>
+        <property name="chave" type="string">
+            <column name="chave" length="19" not-null="true" unique="true" />
+        </property>
+        <property name="nome" type="string">
+            <column name="nome" length="45" not-null="true" />
+        </property>
+        <property name="email" type="string">
+            <column name="email" length="45" not-null="true" />
+        </property>
+        <property name="usado" type="java.lang.Integer">
+            <column name="usado" />
+        </property>
+        <property name="dataAtivacao" type="date">
+            <column name="data_ativacao" length="10"/>
+        </property>
+    </class>
+</hibernate-mapping>

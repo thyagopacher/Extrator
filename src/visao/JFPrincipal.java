@@ -1,0 +1,1089 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package visao;
+
+import Comunicacao.Cliente;
+import Comunicacao.UDPBroadcast;
+import Comunicacao.UDPServidor;
+import java.awt.Cursor;
+import static java.awt.Cursor.getPredefinedCursor;
+import static java.awt.EventQueue.invokeLater;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.awt.HeadlessException;
+import java.awt.Point;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import static java.net.URLDecoder.decode;
+import static java.net.URLEncoder.encode;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import static java.util.logging.Logger.getLogger;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.UIManager.getInstalledLookAndFeels;
+import static javax.swing.UIManager.setLookAndFeel;
+import static jxl.Workbook.createWorkbook;
+import jxl.format.Alignment;
+import jxl.format.Border;
+import jxl.format.BorderLineStyle;
+import jxl.format.Colour;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableFont;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import recursos.Internet;
+
+
+public class JFPrincipal extends javax.swing.JFrame {
+    private static final long serialVersionUID = 1L;
+    Thread              tconstrutor;
+    Thread              tconexao;
+    Thread              tbuscar;
+    Thread              tremove;
+    Thread              tcomeco;
+    Thread              tmonta;
+    Thread              tquantidade;
+    TaskBar Task = new TaskBar("/recursos/img/principal-icon.png",this,"Extrator de E-mails");
+    String              url_final      = "";
+    static final String URL_ORIGINAL   = "http://www.google.com.br/search?q=";
+    static final String TERMOS         = "email+contato+nosso+email";
+    List<Busca>         obj; 
+    TableModelBusca     tm;
+    String              filtro         = "";
+    long                tInicial; 
+    int                 qtd_email;
+    int                 qtd_site;
+    Internet            internet;
+    int                 qtd_urltotal;
+    Busca               busca;
+    UDPBroadcast        br;
+    Date                hoje;
+    UDPServidor         servidor;
+    String              mensagem      = "";
+    List<Cliente>       clientes;
+    Cliente             cliente;
+    TableModelCliente   tmc;
+    static final String ABSHREF = "abs:href";
+    static final String TAGPROCURAR = "search?q=related:";
+    static final String COMECOHTML = "http";
+    static final String SA = "&sa";
+    static final String TAGGOOGLE = "http://www.google.com.br/url?q";
+    static final String CODIFICACAO = "UTF-8";
+    static final String IGUALHTML = "=http";
+    static final String DOISPONTOS = ":";
+    static final String ESPACO = " ";
+    static final String START = "&start=";
+    static final String ZERO = "0";
+    static final String VAZIO = "";
+    static final String ARROBA = "@";
+    static final String ERRO   = "Erro:";
+    static final String WWW    = "www";
+    static final String ATENCAO = "Atenção";
+    private static final String ERRO_AO_INTERROMPER_THREAD_DE_MONTAGEM_DE = "Erro ao interromper thread de montagem de pesquisa:";
+    /**
+     * Creates new form JFBusca2
+     */
+    public JFPrincipal() {
+        initComponents();
+        tconstrutor = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                internet = new Internet();
+                hoje = new Date();
+                tmc = new TableModelCliente();
+                jTable2.setModel(tmc);
+                cliente = new Cliente();
+                clientes = new ArrayList<>(5);
+                br = new UDPBroadcast();
+                tm = new TableModelBusca();
+                jTable1.setModel(tm);
+                servidor = new UDPServidor();
+                setIconImage(new ImageIcon(getClass().getResource("/recursos/img/principal-icon.png")).getImage());
+                qtd_urltotal = 0;
+                qtd_email = 0;
+                tInicial = 0;
+                qtd_site = 0;
+                obj = new ArrayList<>(1000);                
+            }
+        });
+        timer1.setDelay(3000);
+        jLabel1.setLabelFor(tprocurar);
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        pexportar = new javax.swing.JPopupMenu();
+        miexportarword = new javax.swing.JMenuItem();
+        miexportarexcel = new javax.swing.JMenuItem();
+        timer1 = new org.netbeans.examples.lib.timerbean.Timer();
+        timer2 = new org.netbeans.examples.lib.timerbean.Timer();
+        timer_broadcast = new org.netbeans.examples.lib.timerbean.Timer();
+        timer_atualizar_mensagem = new org.netbeans.examples.lib.timerbean.Timer();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel2 = new javax.swing.JPanel();
+        bstop = new javax.swing.JButton();
+        bbuscar = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        bexportar = new javax.swing.JButton();
+        bremoveduplicados = new javax.swing.JButton();
+        blimpar = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        tempogasto = new javax.swing.JLabel();
+        lencontrado = new javax.swing.JLabel();
+        lestatisticas = new javax.swing.JLabel();
+        lurlencontrada = new javax.swing.JLabel();
+        labstatus = new javax.swing.JLabel();
+        lstatus = new javax.swing.JLabel();
+        ltittempo = new javax.swing.JLabel();
+        ltit_contatos = new javax.swing.JLabel();
+        ltit_url = new javax.swing.JLabel();
+        tprocurar = new javax.swing.JTextField();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        lstatus2 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+
+        miexportarword.setText("Word");
+        miexportarword.setToolTipText("exportar para Word");
+        miexportarword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miexportarwordActionPerformed(evt);
+            }
+        });
+        pexportar.add(miexportarword);
+
+        miexportarexcel.setText("Excel");
+        miexportarexcel.setToolTipText("exportar para Excel");
+        miexportarexcel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miexportarexcelActionPerformed(evt);
+            }
+        });
+        pexportar.add(miexportarexcel);
+
+        timer1.addTimerListener(new org.netbeans.examples.lib.timerbean.TimerListener() {
+            public void onTime(java.awt.event.ActionEvent evt) {
+                timer1OnTime(evt);
+            }
+        });
+
+        timer2.addTimerListener(new org.netbeans.examples.lib.timerbean.TimerListener() {
+            public void onTime(java.awt.event.ActionEvent evt) {
+                timer2OnTime(evt);
+            }
+        });
+
+        timer_broadcast.addTimerListener(new org.netbeans.examples.lib.timerbean.TimerListener() {
+            public void onTime(java.awt.event.ActionEvent evt) {
+                timer_broadcastOnTime(evt);
+            }
+        });
+
+        timer_atualizar_mensagem.addTimerListener(new org.netbeans.examples.lib.timerbean.TimerListener() {
+            public void onTime(java.awt.event.ActionEvent evt) {
+                timer_atualizar_mensagemOnTime(evt);
+            }
+        });
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Extrator de E-mails");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
+
+        bstop.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/img/parar-medio.png"))); // NOI18N
+        bstop.setText("Parar");
+        bstop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bstopActionPerformed(evt);
+            }
+        });
+
+        bbuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/img/iniciar-medio.png"))); // NOI18N
+        bbuscar.setMnemonic('I');
+        bbuscar.setText("Iniciar");
+        bbuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bbuscarActionPerformed(evt);
+            }
+        });
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        jLabel1.setText("Procurar");
+
+        bexportar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/img/export.png"))); // NOI18N
+        bexportar.setMnemonic('E');
+        bexportar.setText("Exportar");
+        bexportar.setToolTipText("Exportar para .doc e .xls");
+        bexportar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bexportarActionPerformed(evt);
+            }
+        });
+
+        bremoveduplicados.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/img/removerduplicados.png"))); // NOI18N
+        bremoveduplicados.setMnemonic('R');
+        bremoveduplicados.setText("Remover duplicados");
+        bremoveduplicados.setToolTipText("Remove e-mails duplicados");
+        bremoveduplicados.setEnabled(false);
+        bremoveduplicados.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                bremoveduplicadosMouseClicked(evt);
+            }
+        });
+        bremoveduplicados.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bremoveduplicadosActionPerformed(evt);
+            }
+        });
+
+        blimpar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/img/limpar.png"))); // NOI18N
+        blimpar.setMnemonic('L');
+        blimpar.setText("Limpar");
+        blimpar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                blimparActionPerformed(evt);
+            }
+        });
+
+        jPanel1.setBackground(new java.awt.Color(176, 224, 230));
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/img/emailmassa_logo.png"))); // NOI18N
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel2MouseClicked(evt);
+            }
+        });
+
+        tempogasto.setText("00:00:00");
+
+        lestatisticas.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        lestatisticas.setText("Estatisticas");
+
+        lurlencontrada.setText("0");
+
+        labstatus.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        labstatus.setText("Status");
+
+        lstatus.setText("Aguardando conexão");
+
+        ltittempo.setText("Tempo decorrido:");
+
+        ltit_contatos.setText("Contatos encontrados:");
+
+        ltit_url.setText("Urls encontradas:");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(ltittempo)
+                            .addComponent(ltit_contatos)
+                            .addComponent(ltit_url)
+                            .addComponent(lestatisticas)
+                            .addComponent(labstatus)
+                            .addComponent(lstatus))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(lurlencontrada, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lencontrado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(tempogasto, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE))))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lestatisticas)
+                .addGap(8, 8, 8)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tempogasto)
+                    .addComponent(ltittempo))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lencontrado)
+                    .addComponent(ltit_contatos))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lurlencontrada)
+                    .addComponent(ltit_url))
+                .addGap(41, 41, 41)
+                .addComponent(labstatus)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lstatus)
+                .addGap(27, 27, 27)
+                .addComponent(jLabel2)
+                .addContainerGap(167, Short.MAX_VALUE))
+        );
+
+        tprocurar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tprocurarKeyReleased(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(bbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(bstop, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(bexportar)
+                        .addGap(18, 18, 18)
+                        .addComponent(bremoveduplicados)
+                        .addGap(29, 29, 29)
+                        .addComponent(blimpar))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(18, 18, 18)
+                                .addComponent(tprocurar))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 557, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bbuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bstop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bexportar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(blimpar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bremoveduplicados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(tprocurar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Extrator", jPanel2);
+
+        jLabel3.setText("Meu IP:");
+
+        jLabel4.setText("IP  da máquina quando conectado");
+
+        jButton1.setText("Conectar");
+        jButton1.setToolTipText("Conectar programas em rede, e verifica os ips dos computadores");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Desconectar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        lstatus2.setText("Mensagem de status");
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane4.setViewportView(jTable2);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 856, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1)
+                        .addGap(42, 42, 42)
+                        .addComponent(jButton2))
+                    .addComponent(lstatus2))
+                .addContainerGap(21, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 478, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(lstatus2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Rede", jPanel3);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jTabbedPane1)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 602, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void bbuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bbuscarActionPerformed
+        try{
+            buscar();
+        }catch(Exception ex){
+            showMessageDialog(null, "Erro causado por:" + ex, "ERRO:", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_bbuscarActionPerformed
+
+    private void bexportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bexportarActionPerformed
+        pexportar.show(bexportar, 20, 20);
+    }//GEN-LAST:event_bexportarActionPerformed
+
+    private void bremoveduplicadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bremoveduplicadosMouseClicked
+        if(bremoveduplicados.isEnabled() == false){
+            if(bbuscar.isEnabled() == false){
+                showMessageDialog(null, "Busca parada", ATENCAO, JOptionPane.INFORMATION_MESSAGE);
+            }else{
+                if(obj == null || obj.isEmpty()){
+                    showMessageDialog(null, "Lista vazia", ATENCAO, JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        }
+    }//GEN-LAST:event_bremoveduplicadosMouseClicked
+
+    private void bremoveduplicadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bremoveduplicadosActionPerformed
+        tremove = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                timer2.start();
+                tempogasto.setText("00:00:00");
+                if(obj != null && !obj.isEmpty()){
+                    bremoveduplicados.setEnabled(false);
+                    lstatus.setText("Removendo duplicados");
+                    for(int i = 0; i < obj.size(); i++){
+                        for(int j = 0; j < obj.size(); j++){
+                            if(i != j && obj.get(i).getEmail().equals(obj.get(j).getEmail())){
+                                obj.remove(j);
+                            }
+                        }
+                    }
+                    listar();
+                    lencontrado.setText(String.valueOf(obj.size()));
+                    lstatus.setText("Duplicados removidos");
+                    timer2.stop();
+                }
+            }
+        });
+        tremove.start();
+    }//GEN-LAST:event_bremoveduplicadosActionPerformed
+
+    private void blimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_blimparActionPerformed
+        Thread tabre = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                tbuscar.stop();
+                bbuscar.setEnabled(true);
+                tempogasto.setText("00:00:00");
+                lencontrado.setText(ZERO);
+                lurlencontrada.setText(ZERO);
+                tprocurar.setText(VAZIO);
+                url_final = VAZIO;
+                filtro    = VAZIO;
+                obj = new ArrayList<>(1);
+                listar();
+            }
+        });
+        tabre.start();
+    }//GEN-LAST:event_blimparActionPerformed
+
+    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+
+    }//GEN-LAST:event_jLabel2MouseClicked
+
+    private void timer2OnTime(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timer2OnTime
+        String tempo;
+        int    seg   = Integer.valueOf(tempogasto.getText().split(DOISPONTOS)[2]) + 1;
+        int    min   = Integer.valueOf(tempogasto.getText().split(DOISPONTOS)[1]);
+        int    hora  = Integer.valueOf(tempogasto.getText().split(DOISPONTOS)[0]);
+        
+        if(seg >= 60){
+            seg = 0;
+            min++;
+        }
+        if(min >= 60){
+            min = 0;
+            hora++;
+        }        
+        if(hora == 24){
+            hora = 0;
+        }
+        String chora = VAZIO;
+        if(hora < 10){
+            chora = ZERO;
+        }
+        String cmin = VAZIO;
+        if(min < 10){
+            cmin = ZERO;
+        }        
+        String cseg = VAZIO;
+        if(seg < 10){
+            cseg = ZERO;
+        }        
+        tempo = chora + hora + DOISPONTOS + cmin + min + DOISPONTOS + cseg + seg;
+        tempogasto.setText(tempo);     
+    }//GEN-LAST:event_timer2OnTime
+
+    private void timer1OnTime(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timer1OnTime
+        if(obj.size() > qtd_email || obj.size() < qtd_email){
+            qtd_email = obj.size();
+            lencontrado.setText(String.valueOf(qtd_email));
+            lurlencontrada.setText(String.valueOf(qtd_site));
+            listar();
+        }
+    }//GEN-LAST:event_timer1OnTime
+
+    private void miexportarwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miexportarwordActionPerformed
+        exportaWord();
+    }//GEN-LAST:event_miexportarwordActionPerformed
+
+    private void miexportarexcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miexportarexcelActionPerformed
+        exportaExcel();
+    }//GEN-LAST:event_miexportarexcelActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        tconstrutor.start();          
+    }//GEN-LAST:event_formWindowOpened
+
+    private void bstopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bstopActionPerformed
+        parar();
+    }//GEN-LAST:event_bstopActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        mensagem = tprocurar.getText();
+        timer_broadcast.start();
+        timer_atualizar_mensagem.start();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void timer_broadcastOnTime(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timer_broadcastOnTime
+        String ip_broadcast  = "255.255.255.255";
+        try {
+            br.enviar(mensagem, ip_broadcast, 10000, 10001);
+            jLabel4.setText(br.meu_ip);
+        } catch (Exception ex) {
+            showMessageDialog(null,"Problemas no envio de broadcast:\n" + ex, ERRO, JOptionPane.ERROR_MESSAGE);
+        }
+        UDPBroadcast.clienteSocket.close();//fechar o socket de envio de broadcast
+    }//GEN-LAST:event_timer_broadcastOnTime
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        timer_broadcast.stop();
+        UDPBroadcast.clienteSocket.close();
+        UDPServidor.servidorSocket.close();
+        timer_atualizar_mensagem.stop();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void timer_atualizar_mensagemOnTime(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timer_atualizar_mensagemOnTime
+        servidor.receberMensagem(10000);
+        if(servidor.ip == null || servidor.ip.isEmpty()) {
+            lstatus2.setText("Ninguém conectado");
+        }else{
+            boolean res = false;
+            Date dt = new Date();
+            cliente = new Cliente();
+            cliente.setHora_chegada(mascaraHora(hoje));
+            cliente.setIp(servidor.ip);
+            cliente.setMensagem(servidor.mensagem);
+            cliente.setPorta(servidor.portaRecebida);
+            int qtd = clientes.size();
+            for(int i = 0; i < qtd; i++){
+                if(clientes.get(i).getIp().equals(servidor.ip) && clientes.get(i).getMensagem().equals(servidor.mensagem)){
+                    clientes.set(i, cliente);
+                    res = true;
+                    break;
+                }
+            }
+            if(res == false){
+                clientes.add(cliente);
+            }
+            UDPServidor.servidorSocket.close();
+            listarMensagem();
+        }
+    }//GEN-LAST:event_timer_atualizar_mensagemOnTime
+
+    private void tprocurarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tprocurarKeyReleased
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {   
+            buscar();
+        }
+    }//GEN-LAST:event_tprocurarKeyReleased
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            getLogger(JFPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new JFPrincipal().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bbuscar;
+    private javax.swing.JButton bexportar;
+    private javax.swing.JButton blimpar;
+    private javax.swing.JButton bremoveduplicados;
+    private javax.swing.JButton bstop;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
+    private javax.swing.JLabel labstatus;
+    private javax.swing.JLabel lencontrado;
+    private javax.swing.JLabel lestatisticas;
+    private javax.swing.JLabel lstatus;
+    private javax.swing.JLabel lstatus2;
+    private javax.swing.JLabel ltit_contatos;
+    private javax.swing.JLabel ltit_url;
+    private javax.swing.JLabel ltittempo;
+    private javax.swing.JLabel lurlencontrada;
+    private javax.swing.JMenuItem miexportarexcel;
+    private javax.swing.JMenuItem miexportarword;
+    private javax.swing.JPopupMenu pexportar;
+    private javax.swing.JLabel tempogasto;
+    private org.netbeans.examples.lib.timerbean.Timer timer1;
+    private org.netbeans.examples.lib.timerbean.Timer timer2;
+    private org.netbeans.examples.lib.timerbean.Timer timer_atualizar_mensagem;
+    private org.netbeans.examples.lib.timerbean.Timer timer_broadcast;
+    private javax.swing.JTextField tprocurar;
+    // End of variables declaration//GEN-END:variables
+    
+    public String mascaraHora(Date data){
+        return new SimpleDateFormat("HH:mm:ss").format(data);
+    }      
+    
+    private void listar(){
+        Thread tlistar = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                tm.limpar();
+                tm.addListaDeBuscas(obj);
+                int num = jTable1.getHeight() + 1;
+                Point ponto = new Point((int) jScrollPane1.getViewport().getViewPosition().getX(), num);  
+                jScrollPane1.getViewport().setViewPosition(ponto);                    
+            }
+        });
+        tlistar.start();
+    }
+
+    private void listarMensagem(){
+        tmc.limpar();
+        tmc.addListaDeClientes(clientes);
+    }
+    
+    private int verificaQuantidade(){
+        String res = internet.conectarSite(url_final).select("#resultStats").text().replace(" resultados", VAZIO).replace(".", VAZIO).replace("Aproximadamente ", VAZIO);
+        if(res == null || res.isEmpty() || Integer.valueOf(res) < 10000){
+            return Integer.valueOf("500000");
+        }else{
+            return Integer.valueOf(res);
+        }
+    }
+    
+    private void buscar(){
+        tbuscar = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                montaPesquisa();
+                lstatus.setText("Processando");
+                tempogasto.setText("00:00:00");
+                qtd_email = 0;
+                bstop.setText("Parar");
+                timer2.start();
+                bbuscar.setEnabled(false);
+                bstop.setEnabled(true);
+                obj = new ArrayList<>(500);
+                if(tmonta.isAlive()){
+                    try {
+                        tmonta.join();
+                    } catch (InterruptedException ex) {
+                        showMessageDialog(null, "Erro ao parar thread causado por:" + ex);
+                    }
+                }
+                qtd_urltotal = verificaQuantidade();
+                if(qtd_urltotal > 0){
+                    int qtdclientes = clientes.size();
+                    if(qtdclientes > 1){
+                        int inicio = 0;
+                        int fim    = qtd_urltotal / qtdclientes;
+                        for(int i = 0; i < qtdclientes; i++){
+                            procedimentoBusca(inicio, fim);
+                            inicio = (qtd_urltotal / qtdclientes);
+                            fim    = (qtd_urltotal / qtdclientes) * (i + 2);
+                        }
+                    }else if(qtdclientes <= 1){
+                        procedimentoBusca(0, qtd_urltotal);
+                    }
+                }
+            }
+        });
+        tbuscar.start();
+    }
+ 
+    private void procedimentoBusca(int inicio, int fim){
+        String   site;
+        String   email;
+        String   trocar;
+        Elements sites;
+        Elements emails;
+        int      qtdsite;
+        
+        for(int i = inicio; i < fim; i++){
+            sites       = internet.pegaLinks(url_final + filtro);
+            filtro      = START + (i + 1) + ZERO;
+            if(sites != null && !sites.isEmpty()){
+                qtdsite  = sites.size();
+                qtd_site = qtdsite + qtd_site;
+                for(int j = 0; j < qtdsite; j++){
+                    site = sites.get(j).attr(ABSHREF).replace(TAGPROCURAR, VAZIO).replace(TAGGOOGLE, VAZIO).replace(IGUALHTML, COMECOHTML);
+                    if(site.contains(SA)){
+                        trocar = site.substring(site.indexOf(SA), site.length());
+                        site   = site.replace(trocar, VAZIO);
+                    }
+                    try {
+                        site = decode(site, CODIFICACAO);
+                    } catch (UnsupportedEncodingException ex) {
+                        showMessageDialog(null, "Erro ao decodificar site causado por:" + ex);
+                    }
+                    if(!site.isEmpty() && validaSite(site)){
+                        emails = internet.pegaEmails(site);
+                        if(emails != null && !emails.isEmpty()){
+                            for (Element element : emails) {
+                                email = element.text();
+                                if(email.contains(ESPACO) && email.contains(ARROBA)){
+                                    String lista[]  = email.split(ESPACO);
+                                    int    qtdlista = lista.length;
+                                    for(int l = 0; l < qtdlista; l++){  
+                                        setaBusca(site, lista[l].trim());
+                                    }
+                                }else if(email.contains(ARROBA)){
+                                    setaBusca(site, email.trim());
+                                }                               
+                            }
+                        }
+                    }
+                    timer1.start();
+                }
+            }               
+        }
+    }
+    
+    private void montaPesquisa(){
+        try {
+            tmonta = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try{
+                        if(tprocurar.getText() != null && !tprocurar.getText().isEmpty()){
+                            if(tprocurar.getText().contains(WWW) || tprocurar.getText().contains("http://")){
+                                url_final = new StringBuilder(100).append(URL_ORIGINAL).append("site:").append(encode(tprocurar.getText(), CODIFICACAO)).toString();
+                            }else{
+                                url_final = new StringBuilder(100).append(URL_ORIGINAL).append(TERMOS).append("+").append(encode(tprocurar.getText(), CODIFICACAO)).toString();
+                            }
+                        }
+                    }catch(UnsupportedEncodingException ex){
+                        showMessageDialog(null, ex);
+                    }
+                }
+            });
+            tmonta.start();
+            tmonta.join();
+        } catch (InterruptedException ex) {
+            showMessageDialog(null, ERRO_AO_INTERROMPER_THREAD_DE_MONTAGEM_DE + ex, ERRO, JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    
+    /**Bloqueia formatos que não vão conseguir ser lidos para email*/
+    private boolean validaSite(String url){
+        return url.contains("http")
+                &&  !url.contains("bing.com")
+                &&  !url.contains("webcache")
+                &&  !url.contains("google.com")
+                &&  !url.contains(".doc")
+                &&  !url.contains(".pdf")
+                &&  !url.contains(".docx")
+                &&  !url.contains(".exe")
+                &&  !url.contains(".xls")
+                &&  !url.contains(".xlsx")
+                &&  !url.contains(".jpg")
+                &&  !url.contains(".png")
+                &&  !url.contains(".gif")
+                &&  !url.contains(".svg");
+    }
+
+    private void exportaExcel() {
+        setCursor(getPredefinedCursor(Cursor.WAIT_CURSOR));
+        Thread texporta = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(obj != null && !obj.isEmpty()){
+                    FileDialog fileDialog = new FileDialog(new Frame(), "Salvar", FileDialog.SAVE);
+                    fileDialog.setFile("");
+                    fileDialog.setVisible(true);
+                    boolean verificExpt = false;
+                    try{
+                        if (fileDialog.getFile().isEmpty()){
+                            showMessageDialog(null,"Arquivo sem nome", ATENCAO,JOptionPane.WARNING_MESSAGE); 
+                        }
+                        WritableFont bold = new WritableFont(WritableFont.ARIAL,10, WritableFont.NO_BOLD);
+                        bold.setColour(Colour.BLACK);
+                        WritableCellFormat arial10font = new WritableCellFormat(bold);
+                        arial10font.setBackground(Colour.BLACK);
+                        arial10font.setAlignment(Alignment.CENTRE);
+                        arial10font.setBorder(Border.ALL,BorderLineStyle.MEDIUM,Colour.BLACK);
+                        
+                        WritableFont bold2 = new WritableFont(WritableFont.ARIAL,10, WritableFont.BOLD);
+                        bold2.setColour(Colour.BLACK);
+                        WritableCellFormat arial10font2 = new WritableCellFormat(bold2);
+                        arial10font2.setBackground(Colour.BLACK);
+                        arial10font2.setAlignment(Alignment.CENTRE);
+                        arial10font2.setBorder(Border.ALL,BorderLineStyle.MEDIUM,Colour.BLACK);
+                        
+                        String filename = fileDialog.getDirectory()+fileDialog.getFile()+".xls";
+                        File filename2 = new File(filename);
+                        if (!filename2.exists()){
+                            //Instanciando a classe q gera o novo arquivo do Excel
+                            WritableWorkbook workbook = createWorkbook(new File(filename));
+                            //Criando uma nova planilha
+                            WritableSheet sheet = workbook.createSheet("Consulta", 0);
+                            sheet.setColumnView(0, 50);
+                            sheet.setColumnView(1, 50);
+                            //células de titulo
+                            sheet.addCell(new jxl.write.Label(0, 0, "E-mail", arial10font2));
+                            sheet.addCell(new jxl.write.Label(1, 0, "Site", arial10font2));
+                            
+                            for (int i = 1; i < obj.size(); i++) {
+                                sheet.addCell(new jxl.write.Label(0, i,obj.get(i).getEmail(), arial10font));
+                                sheet.addCell(new jxl.write.Label(1, i, obj.get(i).getDominio(), arial10font));
+                            }
+                            // Escrevedo o arquivo em disco
+                            workbook.write();
+                            // Fechando a IO
+                            workbook.close();  
+                        }
+                    } catch (HeadlessException | WriteException | IOException e2) {
+                        verificExpt = true;
+                        showMessageDialog(null,"Erro ao salvar arquivo" + e2, ATENCAO,JOptionPane.WARNING_MESSAGE);
+                    }
+                    if(!verificExpt){
+                        showMessageDialog(null,"Arquivo salvo","Ok",JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }else if(obj == null || obj.isEmpty()){
+                    showMessageDialog(null, "Exportar vazio", ATENCAO, JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+        texporta.start();
+        setCursor(getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
+
+    private void exportaWord() {
+        setCursor(getPredefinedCursor(Cursor.WAIT_CURSOR));
+        Thread texporta = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(obj != null && !obj.isEmpty()){
+                    PrintStream p;
+                    FileDialog fileDialog = new FileDialog(new Frame(), "Salvar", FileDialog.SAVE);
+                    fileDialog.setFile("");
+                    fileDialog.setVisible(true);
+                    boolean verificExpt = false;
+                    try{
+                        if (fileDialog.getFile().isEmpty()){
+                            showMessageDialog(null,"Arquivo sem nome", ATENCAO,JOptionPane.WARNING_MESSAGE);
+                        }
+                        OutputStream os = new FileOutputStream(fileDialog.getDirectory()+fileDialog.getFile()+".doc", true);
+                        String        texto = "       " + "E-mail" + "\n";
+                        final StringBuilder sb    = new StringBuilder(1000);
+                        obj.stream().filter(new Predicate<Busca>() {
+
+                            @Override
+                            public boolean test(Busca obj1) {
+                                return obj1.getEmail() != null && !obj1.getEmail().isEmpty();
+                            }
+                        }).forEach(new Consumer<Busca>() {
+
+                            @Override
+                            public void accept(Busca obj1) {
+                                sb.append("\n").append(obj1.getEmail());
+                            }
+                        });
+                        texto += new String(sb);
+                        p     = new PrintStream(os);
+                        p.write((texto).getBytes());
+                        p.close();
+                    }catch (HeadlessException | IOException e1) {
+                        verificExpt = true;
+                        showMessageDialog(null,"Erro ao salvar arquivo" + e1, ATENCAO,JOptionPane.WARNING_MESSAGE);
+                    }
+                    if(!verificExpt){
+                        showMessageDialog(null,"Arquivo salvo","Confirmação",JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }else if(obj == null || obj.isEmpty()){
+                    showMessageDialog(null, "Exportar vazio", ATENCAO, JOptionPane.INFORMATION_MESSAGE);
+                }
+            }            
+        });
+        texporta.start();
+        setCursor(getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
+    
+    private void continuar(){
+        blimpar.setEnabled(false);
+        timer1.start();
+        timer2.start();
+        bstop.setText("Parar");        
+        bremoveduplicados.setEnabled(true);
+        lstatus.setText("Continuando processamento");
+    }
+ 
+    private void setaBusca(String site, String email){
+        busca = new Busca();
+        busca.setEmail(email.toLowerCase());
+        busca.setDominio(site);
+        busca.setTelefone(internet.pegaTelefone(site));
+        obj.add(busca);
+    }
+
+    private void parar() {
+        try{
+            if(bstop.getText().equals("Parar")){
+                lstatus.setText("Processamento parado");
+                blimpar.setEnabled(true);
+                bstop.setCursor(getPredefinedCursor(Cursor.WAIT_CURSOR));
+                timer1.stop();
+                timer2.stop();
+                bstop.setText("Continuar");
+                if(obj != null && !obj.isEmpty()){
+                    bremoveduplicados.setEnabled(true);
+                    lencontrado.setText(String.valueOf(obj.size()));
+                    listar();
+                }
+                
+                bstop.setCursor(getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }else{
+                continuar();
+            }
+        }catch (Exception ex) {
+            showMessageDialog(null, "Erro causado por:" + ex, "Erro:", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+       
+}

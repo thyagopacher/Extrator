@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 17/02/2014 13:51:31 by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+    <class name="vo.Email" table="email" catalog="emailmarketing">
+        <id name="codemail" type="java.lang.Integer">
+            <column name="codemail" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="listaemail" class="vo.Listaemail" fetch="select">
+            <column name="codlista" not-null="true" />
+        </many-to-one>
+        <property name="email" type="string">
+            <column name="email" length="100" not-null="true" />
+        </property>
+        <property name="status" type="string">
+            <column name="status" length="20" />
+        </property>
+        <property name="coddono" type="int">
+            <column name="coddono" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>
